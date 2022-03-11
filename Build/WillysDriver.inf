@@ -1,0 +1,80 @@
+;
+; WillysDriver.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=System ; TODO: specify appropriate Class
+ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=WillysDriver.cat
+DriverVer = 03/12/2022,9.14.44.102
+PnpLockdown=1
+
+[DestinationDirs]
+DefaultDestDir = 12
+WillysDriver_Device_CoInstaller_CopyFiles = 11
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+WillysDriver.sys  = 1,,
+;
+
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NTamd64
+
+[Standard.NTamd64]
+%WillysDriver.DeviceDesc%=WillysDriver_Device, Root\WillysDriver ; TODO: edit hw-id
+
+[WillysDriver_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+WillysDriver.sys
+
+;-------------- Service installation
+[WillysDriver_Device.NT.Services]
+AddService = WillysDriver,%SPSVCINST_ASSOCSERVICE%, WillysDriver_Service_Inst
+
+; -------------- WillysDriver driver install sections
+[WillysDriver_Service_Inst]
+DisplayName    = %WillysDriver.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\WillysDriver.sys
+
+;
+;--- WillysDriver_Device Coinstaller installation ------
+;
+
+[WillysDriver_Device.NT.CoInstallers]
+AddReg=WillysDriver_Device_CoInstaller_AddReg
+CopyFiles=WillysDriver_Device_CoInstaller_CopyFiles
+
+[WillysDriver_Device_CoInstaller_AddReg]
+;
+
+
+[WillysDriver_Device_CoInstaller_CopyFiles]
+;
+
+
+[WillysDriver_Device.NT.Wdf]
+KmdfService =  WillysDriver, WillysDriver_wdfsect
+[WillysDriver_wdfsect]
+KmdfLibraryVersion = 1.15
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "WillysDriver Installation Disk"
+WillysDriver.DeviceDesc = "WillysDriver Device"
+WillysDriver.SVCDESC = "WillysDriver Service"
